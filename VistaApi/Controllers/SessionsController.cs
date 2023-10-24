@@ -24,6 +24,10 @@ namespace VistaApi.Controllers
         }
 
         // GET: api/Sessions
+        /// <summary>
+        /// Get All Sessions asa list of SessionBookingDTO
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SessionBookingDTO>>> GetSessions()
         {
@@ -45,6 +49,11 @@ namespace VistaApi.Controllers
         }
 
         // GET: api/Sessions/5
+        /// <summary>
+        /// Get a SessionBookingDTO by Session Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<SessionBookingDTO>> GetSession(int id)
         {
@@ -71,6 +80,9 @@ namespace VistaApi.Controllers
 
         // PUT: api/Sessions/5
         // /sessions/{sessionId}/bookings
+        /// <summary>
+        ///  Modify an existing session with a Random BookingId return SessionBookingDTO 
+        /// </summary>
         [HttpPut("{sessionId}/book")]
         public async Task<IActionResult> BookSession(int sessionId, SessionBookingDTO session)
         {
@@ -103,15 +115,18 @@ namespace VistaApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Modify an existing booking so that the booking refrence is null
+        /// </summary>
         [HttpPut("{sessionId}/cancel")]
         public async Task<IActionResult> CancelSession(int sessionId, SessionBookingDTO session)
         {
-            if (sessionId != session.SessionId)
+            if (session.BookingReference == null ||sessionId != session.SessionId)
             {
                 return BadRequest();
             }
 
-            var DbSessions = await _context.Sessions.FindAsync(sessionId);
+            var DbSessions = await _context.Sessions.SingleOrDefaultAsync(s => s.BookingReference == session.BookingReference);
 
             if (DbSessions == null)
             {
@@ -135,6 +150,9 @@ namespace VistaApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        ///  Update SessionId and TrainerId for a session, if Trainer is available for that session
+        /// </summary>
         [HttpPut("{sessionId}/edit")]
         public async Task<IActionResult> EditSession(int sessionId, SessionBookingDTO session)
         {
@@ -181,6 +199,9 @@ namespace VistaApi.Controllers
         }
 
         // POST: api/Sessions
+        /// <summary>
+        /// Add a session if the Trainer is available for that session
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<SessionBookingDTO>> NewSession(SessionBookingDTO session)
         {
@@ -214,6 +235,9 @@ namespace VistaApi.Controllers
         }
 
         // DELETE: api/Sessions/5
+        /// <summary>
+        /// Delete a session with NO BookingId
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSession(int id)
         {
@@ -226,11 +250,21 @@ namespace VistaApi.Controllers
             {
                 return NotFound();
             }
+            if (session.BookingReference !=null)
+            {
+                return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            }
 
+            try { 
             _context.Sessions.Remove(session);
             await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
 
-            return NoContent();
+            return StatusCode(StatusCodes.Status204NoContent);
         }
 
         private bool SessionExists(int id)

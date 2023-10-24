@@ -86,10 +86,7 @@ namespace VistaApi.Controllers
             }           
         }
 
-        private async Task<Trainer?> GetTrainerCategories(int id)
-        {
-            return await _context.Trainers.Include(c => c.TrainerCategories).ThenInclude(c => c.Category).SingleOrDefaultAsync(t => t.TrainerId == id);
-        }
+
 
         /// <summary>
         /// Returns a specific of TrainerSessionDTO when provided with a valid id.
@@ -141,16 +138,13 @@ namespace VistaApi.Controllers
 
         }
 
-        private async Task<Trainer?> GetTrainerSessionById(int id)
-        {
-            return await _context.Trainers.Include(c => c.Sessions).SingleOrDefaultAsync(t => t.TrainerId == id);
-        }
+ 
 
 
 
         // PUT: api/Trainers/5
         /// <summary>
-        /// 
+        /// Update Trainer
         /// </summary>
         /// <param name="id"></param>
         /// <param name="trainer"></param>
@@ -177,7 +171,7 @@ namespace VistaApi.Controllers
                 }
                 else
                 {
-                    throw;
+                    return StatusCode(StatusCodes.Status500InternalServerError);
                 }
             }
 
@@ -335,6 +329,9 @@ namespace VistaApi.Controllers
 
         // DELETE: api/Trainers/5
 
+        /// <summary>
+        /// Delete a Trainer
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTrainer(int id)
         {
@@ -354,19 +351,29 @@ namespace VistaApi.Controllers
             return NoContent();
         }
 
+        #region helperMethods
+
+        private async Task<Trainer?> GetTrainerSessionById(int id)
+        {
+            return await _context.Trainers.Include(c => c.Sessions).SingleOrDefaultAsync(t => t.TrainerId == id);
+        }
+
+        private async Task<Trainer?> GetTrainerCategories(int id)
+        {
+            return await _context.Trainers.Include(c => c.TrainerCategories).ThenInclude(c => c.Category).SingleOrDefaultAsync(t => t.TrainerId == id);
+        }
+
         private bool TrainerExists(int id)
         {
             return (_context.Trainers?.Any(e => e.TrainerId == id)).GetValueOrDefault();
         }
 
-        private bool CategoryDoesNotExist(string id)
-        {
-            return !_context.Categories.Any(e => e.CategoryCode == id);
-        }
 
         private bool AnyInputIsNotValid(List<string> inputCodes)
         {
             return inputCodes.Any(code => !_context.Categories.Any(e => e.CategoryCode == code));
         }
+
+        #endregion
     }
 }
