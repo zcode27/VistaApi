@@ -9,7 +9,7 @@ namespace Vista.Web.Data
         {
             StaffId = staffId;
             LastName = lastName;
-            FirstName = firstName
+            FirstName = firstName;
         }
         public int StaffId { get; set; } = 0;
 
