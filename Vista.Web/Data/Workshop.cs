@@ -21,6 +21,6 @@ namespace Vista.Web.Data
         public string BookingRef { get; set; } = null;
 
         //List of Staff (many side of one-to-many)
-        public List<WorkshopStaff> Staff {get; set; }
+        public List<WorkshopStaff> Staff { get; set; }
     }
 }

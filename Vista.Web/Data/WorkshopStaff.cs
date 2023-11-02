@@ -7,7 +7,8 @@ namespace Vista.Web.Data
         public WorkshopStaff() { }
         public WorkshopStaff(int workshopId, int staffId) 
         {
-
+            WorkshopId = workshopId;
+            StaffId = staffId;
         }
 
         public int WorkshopId { get; set; }
