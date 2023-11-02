@@ -20,7 +20,7 @@ namespace Vista.Web.Data
         public string FirstName { get; } = null!;
 
         //List of Workshops (many side of one-to-many)
-        public List<WorkshopStaff> Workshop { get; set; }
+        public List<WorkshopStaff> Workshops { get; set; }
 
     }
 }
