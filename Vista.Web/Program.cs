@@ -1,7 +1,12 @@
+using Vista.Web.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register database context with the framework 
+builder.Services.AddDbContext<WorkshopsContext>();
 
 var app = builder.Build();
 
